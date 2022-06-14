@@ -22,7 +22,5 @@ public class Paciente {
     private String apellido;
     @Column(name = "documento_paciente")
     private String documento;
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_cita", referencedColumnName = "id_cita")
-    private Cita cita;
+
 }

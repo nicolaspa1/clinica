@@ -1,12 +1,14 @@
 package com.ufps.clinica.persistence.mapper;
 
 import com.ufps.clinica.domain.modelo.PacienteModelo;
-import com.ufps.clinica.persistence.entity.Medico;
+import com.ufps.clinica.persistence.entity.Paciente;
 import org.mapstruct.InheritInverseConfiguration;
+import org.mapstruct.Mapper;
 
-public interface Paciente {
+@Mapper(componentModel = "spring")
+public interface PacienteMapeador {
     PacienteModelo convertirPacienteModelo(Paciente paciente);
 
     @InheritInverseConfiguration
-    Paciente convertirPaciente(PacienteModelo pacienteModeloModelo);
+    Paciente convertirPaciente(PacienteModelo pacienteModelo);
 }

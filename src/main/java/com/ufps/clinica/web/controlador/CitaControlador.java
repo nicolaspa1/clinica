@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,40 +23,77 @@ public class CitaControlador {
     private CitaServicio citaServicio;
 
     @GetMapping(value = "/buscarPorId/{id}")
-    public ResponseEntity<CitaModelo> obtenerCitaPorID(@PathVariable Long id){
-        CitaModelo citaModelo = null;
-        citaModelo = citaServicio.obtenerCitaPorId(id);
-        return new ResponseEntity<>(citaModelo, HttpStatus.OK);
+    public ResponseEntity<? extends Map> obtenerCitaPorID(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            CitaModelo m = citaServicio.obtenerCitaPorId(id);
+            response.put("mensaje", "Cita encontrada");
+            response.put("cita", m);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.put("mensaje", "Cita no encontrada");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<? extends Object> obtenerPacientes() {
+        List<CitaModelo> citas = citaServicio.obtenerCitas();
+        return ResponseEntity.ok(citas);
+
     }
 
     @PostMapping
     @ResponseBody
-    public ResponseEntity<? extends Map> guardarCita(@RequestBody CitaModelo citaModelo){
-        Map<String,Object> response = new HashMap<>();
-        CitaModelo citaModelo1 = this.citaServicio.obtenerCitaPorId(citaModelo.getIdCita());
-        if (citaModelo1 == null){
-            this.citaServicio.guardar(citaModelo);
-            response.put("mensaje","Cita creada de manera correcta");
-            return new ResponseEntity<Map<String,Object>>(response,HttpStatus.CREATED);
-        }else {
-            response.put("mensaje","ha ocurrido un error al crear el usuario");
-            return new ResponseEntity<Map<String,Object>>(response,HttpStatus.CONFLICT);
+    public ResponseEntity<? extends Map> guardarCita(@RequestBody CitaModelo citaModelo) {
+        Map<String, Object> response = new HashMap<>();
+
+
+        if (citaModelo != null) {
+            CitaModelo m = this.citaServicio.guardar(citaModelo);
+            response.put("mensaje", "Cita registrada de manera correcta");
+            response.put("cita", m);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } else {
+            response.put("mensaje", "Ha ocurrido un error al registrar la cita");
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
     }
 
-    @DeleteMapping()
-    public ResponseEntity<CitaModelo> eliminarCita(@PathVariable Long id){
-        citaServicio.eliminar(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<? extends Map> eliminarCita(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            citaServicio.eliminar(id);
+            response.put("mensaje", "Se removio la cita con id " + id);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.put("mensaje", "No se removio la cita con id " + id);
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+
+        }
+
     }
 
     @PutMapping
     @ResponseBody
-    public ResponseEntity<CitaModelo> actualizarCita(@RequestBody CitaModelo citaModelo){
-        citaServicio.actualizar(citaModelo);
-        return new ResponseEntity<>(citaModelo,HttpStatus.CREATED);
-    }
+    public ResponseEntity<? extends Map> actualizarCita(@RequestBody CitaModelo citaModelo) {
+        Map<String, Object> response = new HashMap<>();
 
+        try {
+            CitaModelo m = citaServicio.actualizar(citaModelo);
+            response.put("mensaje", "Se actualizo la cita con id " + citaModelo.getIdCita());
+            response.put("cita", m);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+        } catch (Exception e) {
+            response.put("mensaje", "No se actualizo la cita con id " + citaModelo.getIdCita());
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+
+        }
+
+    }
 
 
 }
