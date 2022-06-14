@@ -28,6 +28,10 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	runtimeOnly 'com.h2database:h2:2.1.212'
+	compileOnly 'org.springframework.boot:spring-boot-devtools:2.7.0'
+
+
 }
 
 tasks.named('test') {
